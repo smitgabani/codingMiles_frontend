@@ -1,9 +1,14 @@
 import React, { useState, useContext } from 'react';
 import { AccountContext } from './Account';
+import { useDispatch } from 'react-redux';
+import { appLogin } from '../../features/user';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const { authenticate } = useContext(AccountContext);
 
@@ -12,13 +17,25 @@ export default function Login() {
 
     authenticate(username, password)
       .then((data) => {
-        console.log('Logged in!', data);
+        console.log(data);
+        dispatch(
+          appLogin({
+            email: data.idToken.payload.email,
+            username: data.accessToken.payload.username,
+            idToken: data.idToken.jwtToken,
+            accessToken: data.accessToken.jwtToken,
+            refreshToken: data.refreshToken.token,
+          })
+        );
       })
       .catch((err) => {
         console.error('Failed to login!', err);
       });
     setUsername('');
     setPassword('');
+    navigate({
+      pathname: '/',
+    });
   };
 
   return (

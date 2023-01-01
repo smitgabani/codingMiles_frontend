@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { AccountContext } from './Account';
-import Status from './Status';
+import { useDispatch } from 'react-redux';
+import { appLogout, appLogin } from '../../features/user';
+
 function LoggedOutView() {
   if (true)
     return (
@@ -28,8 +30,8 @@ function LoggedOutView() {
     );
 }
 
-function LoggedInView({ user, status, logout }) {
-  console.log(user);
+function LoggedInView({ user, logout }) {
+  const dispatch = useDispatch();
   return (
     <ul className="nav navbar-nav pull-xs-right">
       <li className="nav-item">
@@ -38,12 +40,18 @@ function LoggedInView({ user, status, logout }) {
         </Link>
       </li>
 
-      <li className="nav-item" onClick={logout}>
+      <li
+        className="nav-item"
+        onClick={() => {
+          dispatch(appLogout());
+          logout();
+        }}
+      >
         <div className="nav-link">Logout</div>
       </li>
 
       <li className="nav-item" style={{ paddingLeft: 100 }}>
-        <Link to="/user" className="nav-link">
+        <Link to={`/user/${user.username}`} className="nav-link">
           {user.username}
         </Link>
       </li>
@@ -51,18 +59,20 @@ function LoggedInView({ user, status, logout }) {
   );
 }
 
-export default function Header() {
-  const [user, setUser] = useState(null);
-  const [status, setStatus] = useState(false);
-  const { getSession, logout, getUser } = useContext(AccountContext);
+export default function Header({ user }) {
+  const dispatch = useDispatch();
+  const { getSession, logout } = useContext(AccountContext);
   useEffect(() => {
     getSession().then((session) => {
-      console.log('Session:', session);
-      setStatus(true);
-    });
-    getUser().then((user) => {
-      console.log('Session:', user);
-      setUser(user);
+      dispatch(
+        appLogin({
+          email: session.idToken.payload.email,
+          username: session.accessToken.payload.username,
+          idToken: session.idToken.jwtToken,
+          accessToken: session.accessToken.jwtToken,
+          refreshToken: session.refreshToken.token,
+        })
+      );
     });
   }, []);
   return (
@@ -71,7 +81,7 @@ export default function Header() {
         <Link to="/" className="navbar-brand">
           Coding Miles
         </Link>
-        {user && <LoggedInView user={user} status={status} logout={logout} />}
+        {user && <LoggedInView user={user} logout={logout} />}
         {!user && <LoggedOutView />}
       </div>
     </nav>

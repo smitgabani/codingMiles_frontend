@@ -6,13 +6,15 @@ import {
   Route,
 } from "react-router-dom";
 import Verify from './components/layout/Verify';
+import { useSelector  } from 'react-redux'; 
+
 
 function App() {
-
+  const user = useSelector((state) => state.user.value);
   return (
     <Account>
     <div className="App">
-      <Header/>
+      <Header user={user}/>
       <Routes>
             <Route exact path="/" element={<Home/>}/>
             <Route path="/login" element={<Login/>} />

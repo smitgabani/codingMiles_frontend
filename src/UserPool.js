@@ -8,13 +8,11 @@ const userPoolData = {
 const UserPool = new CognitoUserPool(userPoolData);
 
 export const signUp = (email, username, password ) => {
-    console.log(email, username, password);
     UserPool.signUp(username, password, [{
         Name: 'email',
         Value: email,
       }], null, (err, data) => {
         if (err) console.error(err);
-        console.log(data);
       });
 }
 
@@ -27,6 +25,9 @@ export const getSession = async () =>
           reject();
         } else {
           resolve(session);
+          // setuser()
+          // setsession()
+          console.log(session);
         }
       });
     } else {
@@ -57,7 +58,6 @@ export const authenticate = async (username, password) =>
   
       user.authenticateUser(authDetails, {
         onSuccess: data => {
-          console.log("onSuccess:", data);
           resolve(data);
         },
   
@@ -67,7 +67,6 @@ export const authenticate = async (username, password) =>
         },
   
         newPasswordRequired: data => {
-          console.log("newPasswordRequired:", data);
           resolve(data);
         }
       });
@@ -78,7 +77,6 @@ export const verify = (code, username) => {
 
     user.confirmRegistration(code, true, (err, data) => {
       if (err) console.error(err);
-      console.log(data);
     });
 }
 
