@@ -1,16 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { AccountContext } from './Account';
 import { useDispatch } from 'react-redux';
 import { appLogin } from '../../features/user';
 import { useNavigate } from 'react-router-dom';
-
+import { authenticate } from '../../UserPool';
 export default function Login() {
   const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  const { authenticate } = useContext(AccountContext);
 
   const onSubmit = (event) => {
     event.preventDefault();

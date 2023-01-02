@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useEffect, useContext } from 'react';
-import { AccountContext } from './Account';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { appLogout, appLogin } from '../../features/user';
+import { logout } from '../../UserPool';
 
 function LoggedOutView() {
   if (true)
@@ -59,22 +58,8 @@ function LoggedInView({ user, logout }) {
   );
 }
 
-export default function Header({ user }) {
-  const dispatch = useDispatch();
-  const { getSession, logout } = useContext(AccountContext);
-  useEffect(() => {
-    getSession().then((session) => {
-      dispatch(
-        appLogin({
-          email: session.idToken.payload.email,
-          username: session.accessToken.payload.username,
-          idToken: session.idToken.jwtToken,
-          accessToken: session.accessToken.jwtToken,
-          refreshToken: session.refreshToken.token,
-        })
-      );
-    });
-  }, []);
+export default function Header() {
+  const user = useSelector((state) => state.user.value);
   return (
     <nav className="navbar navbar-light">
       <div className="container">
